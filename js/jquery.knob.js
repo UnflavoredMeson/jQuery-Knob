@@ -293,6 +293,7 @@
         this._mouse = function(e, reversed) {
 
             var mouseMove = function(e) {
+
                 var v = s.xy2val(e.pageX, e.pageY, reversed);
 
                 if (v == s.cv)
@@ -307,6 +308,19 @@
                 s.change(s._validate(v));
                 s._draw();
             };
+
+            if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height - (this.o.height / 3) * 2 - 2 && e.offsetY >= this.o.height - (this.o.height / 3) * 2 - 22) {
+                if (reversed) {
+                    console.log(s.cv);
+                    s.change(s._validate(this.v - 1));
+                    s._draw();
+                } else {
+                    console.log(s.cv);
+                    s.change(s._validate(this.v + 1));
+                    s._draw();
+                }
+                            return this;
+            }
 
             // First click
             mouseMove(e);
