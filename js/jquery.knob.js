@@ -107,6 +107,7 @@
                         inline: false,
                         step: this.$.data('step') || 1,
                         reversed: this.$.data('reversed'),
+                        canvasBgColor: this.$.data('canvasbgcolor') || false,
                         // Hooks
                         draw: null, // function () {}
                         change: null, // function (value) {}
@@ -647,7 +648,7 @@
                         , 'margin-left': '-' + ((this.o.width * 3 / 4 + 2) >> 0) + 'px'
                         , 'border': 0
                         , 'background': 'none'
-                        , 'font' : this.o.fontWeight + ' ' + ((this.o.width / s) >> 0) + 'px ' + this.o.font
+                        , 'font': this.o.fontWeight + ' ' + ((this.o.width / s) >> 0) + 'px ' + this.o.font
                         , 'text-align': 'center'
                         , 'color': this.o.inputColor || this.o.fgColor
                         , 'padding': '0px'
@@ -681,6 +682,13 @@
 
             c.lineCap = this.lineCap;
 
+            if (this.o.canvasBgColor !== false) {
+                c.beginPath();
+                c.fillStyle = this.o.canvasBgColor;
+                c.arc(this.xy, this.xy, this.radius - this.lineWidth / 2 - 1, 0, 2 * Math.PI, true);
+                c.fill();
+            }
+
             this.o.cursor
                     && (sat = eat - this.cursorExt)
                     && (eat = eat + this.cursorExt);
@@ -689,6 +697,18 @@
             c.strokeStyle = this.o.bgColor;
             c.arc(this.xy, this.xy, this.radius, this.endAngle, this.startAngle, true);
             c.stroke();
+
+            if (this.o.readOnly !== true) {
+                c.font = "22px Arial";
+                c.fillStyle = this.o.fgColor;
+                if (!this.o.reversed) {
+                    c.fillText("+", this.o.width / 2 - 7, this.o.height - (this.o.height / 3) * 2 - 2);
+                    c.fillText("−", this.o.width / 2 - 7, this.o.height);
+                } else {
+                    c.fillText("−", this.o.width / 2 - 7, this.o.height - (this.o.height / 3) * 2 - 2);
+                    c.fillText("+", this.o.width / 2 - 7, this.o.height);
+                }
+            }
 
             if (this.o.displayPrevious) {
                 ea = this.startAngle + this.angle(this.v);
