@@ -263,11 +263,44 @@
                 s._draw();
             };
 
+            var touchClick = function(e, v) {
+
+var x = e.targetTouches[0].pageX - e.clientLeft;
+var y = e.targetTouches[0].pageY- e.clientTop;
+
+                if (reversed) {
+                    var v = s.plusminusval(-v);
+                } else {
+                    var v = s.plusminusval(v);
+                }
+
+                if (v == s.cv)
+                    return;
+
+                if (
+                        s.cH
+                        && (s.cH(v) === false)
+                        )
+                    return;
+
+                s.change(s._validate(v));
+                s._draw();
+            };
+
+            if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height - (this.o.height / 3) * 2 - 2 && e.offsetY >= this.o.height - (this.o.height / 3) * 2 - 22) {
+                //plus-minus touch
+                touchClick(e, 1);
+            } else if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height && e.offsetY >= this.o.height - 25) {
+                //plus-minus touch
+                touchClick(e, -1);
+            } else {
+                // First touch
+                touchMove(e);
+            }
+
             // get touches index
             this.t = k.c.t(e);
 
-            // First touch
-            touchMove(e);
 
             // Touch events listeners
             k.c.d
@@ -295,6 +328,7 @@
             var mouseMove = function(e) {
 
                 var v = s.xy2val(e.pageX, e.pageY, reversed);
+                console.log(v);
 
                 if (v == s.cv)
                     return;
@@ -309,21 +343,40 @@
                 s._draw();
             };
 
-            if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height - (this.o.height / 3) * 2 - 2 && e.offsetY >= this.o.height - (this.o.height / 3) * 2 - 22) {
+            var mouseClick = function(e, v) {
+
+
                 if (reversed) {
-                    console.log(s.cv);
-                    s.change(s._validate(this.v - 1));
-                    s._draw();
+                    var v = s.plusminusval(-v);
                 } else {
-                    console.log(s.cv);
-                    s.change(s._validate(this.v + 1));
-                    s._draw();
+                    var v = s.plusminusval(v);
                 }
-                            return this;
+
+                console.log(v);
+                if (v == s.cv)
+                    return;
+
+                if (
+                        s.cH
+                        && (s.cH(v) === false)
+                        )
+                    return;
+
+                s.change(s._validate(v));
+                s._draw();
+            };
+
+            if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height - (this.o.height / 3) * 2 - 2 && e.offsetY >= this.o.height - (this.o.height / 3) * 2 - 22) {
+                //plus-minus click
+                mouseClick(e, 1);
+            } else if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height && e.offsetY >= this.o.height - 25) {
+                //plus-minus click
+                mouseClick(e, -1);
+            } else {
+                // First click
+                mouseMove(e);
             }
 
-            // First click
-            mouseMove(e);
 
             // Mouse events listeners
             k.c.d
@@ -444,6 +497,8 @@
         this.clear = function() {
             this._clear();
         };
+        this.plusminusval = function(v) {
+        }; //
 
         // Utils
         this.h2rgba = function(h, a) {
@@ -527,6 +582,17 @@
                     && (ret = max(min(ret, this.o.max), this.o.min));
 
             return ret;
+        };
+
+        this.plusminusval = function(v) {
+
+            var ret = this.v + v;
+
+            this.o.stopper
+                    && (ret = max(min(ret, this.o.max), this.o.min));
+
+            return ret;
+
         };
 
         this.listen = function() {
@@ -711,8 +777,10 @@
             c.strokeStyle = this.o.bgColor;
             c.arc(this.xy, this.xy, this.radius, this.endAngle, this.startAngle, true);
             c.stroke();
+            
+            console.log(this.o.readOnly);
 
-            if (this.o.readOnly !== true) {
+            if (this.o.readOnly != 'true') {
                 c.font = "22px Arial";
                 c.fillStyle = this.o.fgColor;
                 if (!this.o.reversed) {
