@@ -108,6 +108,7 @@
                         step: this.$.data('step') || 1,
                         reversed: this.$.data('reversed'),
                         canvasBgColor: this.$.data('canvasbgcolor') || false,
+                        mod: this.$.data('mod') || 'A',
                         // Hooks
                         draw: null, // function () {}
                         change: null, // function (value) {}
@@ -265,8 +266,8 @@
 
             var touchClick = function(e, v) {
 
-var x = e.targetTouches[0].pageX - e.clientLeft;
-var y = e.targetTouches[0].pageY- e.clientTop;
+                var x = e.targetTouches[0].pageX - e.clientLeft;
+                var y = e.targetTouches[0].pageY - e.clientTop;
 
                 if (reversed) {
                     var v = s.plusminusval(-v);
@@ -328,7 +329,6 @@ var y = e.targetTouches[0].pageY- e.clientTop;
             var mouseMove = function(e) {
 
                 var v = s.xy2val(e.pageX, e.pageY, reversed);
-                console.log(v);
 
                 if (v == s.cv)
                     return;
@@ -352,7 +352,6 @@ var y = e.targetTouches[0].pageY- e.clientTop;
                     var v = s.plusminusval(v);
                 }
 
-                console.log(v);
                 if (v == s.cv)
                     return;
 
@@ -366,12 +365,29 @@ var y = e.targetTouches[0].pageY- e.clientTop;
                 s._draw();
             };
 
-            if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height - (this.o.height / 3) * 2 - 2 && e.offsetY >= this.o.height - (this.o.height / 3) * 2 - 22) {
-                //plus-minus click
-                mouseClick(e, 1);
-            } else if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height && e.offsetY >= this.o.height - 25) {
-                //plus-minus click
-                mouseClick(e, -1);
+            if (this.o.mod === 'B') {
+
+                if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height - (this.o.height / 3) * 2 - 2 && e.offsetY >= this.o.height - (this.o.height / 3) * 2 - 22) {
+                    //plus-minus touch
+                    touchClick(e, 1);
+                } else if (e.offsetX >= this.o.width / 2 - 7 && e.offsetX <= this.o.width / 2 + 15 && e.offsetY <= this.o.height && e.offsetY >= this.o.height - 25) {
+                    //plus-minus touch
+                    touchClick(e, -1);
+                } else {
+                    // First touch
+                    touchMove(e);
+                }
+            } else if (this.o.mod === 'C') {
+                if (e.offsetX >= this.o.width / 2 - 34 && e.offsetX <= this.o.width / 2 - 18 && e.offsetY <= this.o.height - 7 && e.offsetY >= this.o.height - 32) {
+                    //plus-minus click
+                    mouseClick(e, 1);
+                } else if (e.offsetX >= this.o.width / 2 + 20 && e.offsetX <= this.o.width / 2 + 36 && e.offsetY <= this.o.height - 7 && e.offsetY >= this.o.height - 32) {
+                    //plus-minus click
+                    mouseClick(e, -1);
+                } else {
+                    // First click
+                    mouseMove(e);
+                }
             } else {
                 // First click
                 mouseMove(e);
@@ -777,18 +793,25 @@ var y = e.targetTouches[0].pageY- e.clientTop;
             c.strokeStyle = this.o.bgColor;
             c.arc(this.xy, this.xy, this.radius, this.endAngle, this.startAngle, true);
             c.stroke();
-            
-            console.log(this.o.readOnly);
 
-            if (this.o.readOnly != 'true') {
-                c.font = "22px Arial";
-                c.fillStyle = this.o.fgColor;
-                if (!this.o.reversed) {
-                    c.fillText("+", this.o.width / 2 - 7, this.o.height - (this.o.height / 3) * 2 - 2);
-                    c.fillText("−", this.o.width / 2 - 7, this.o.height);
-                } else {
-                    c.fillText("−", this.o.width / 2 - 7, this.o.height - (this.o.height / 3) * 2 - 2);
-                    c.fillText("+", this.o.width / 2 - 7, this.o.height);
+            if (this.o.mod === 'B') {
+                if (this.o.readOnly != 'true') {
+                    c.font = "22px Arial";
+                    c.fillStyle = this.o.fgColor;
+                    if (!this.o.reversed) {
+                        c.fillText("+", this.o.width / 2 - 7, this.o.height - (this.o.height / 3) * 2 - 2);
+                        c.fillText("−", this.o.width / 2 - 7, this.o.height);
+                    } else {
+                        c.fillText("−", this.o.width / 2 - 7, this.o.height - (this.o.height / 3) * 2 - 2);
+                        c.fillText("+", this.o.width / 2 - 7, this.o.height);
+                    }
+                }
+            } else if (this.o.mod === 'C') {
+                if (this.o.readOnly != 'true') {
+                    c.font = "28px Arial";
+                    c.fillStyle = this.o.fgColor;
+                    c.fillText("−", this.o.width / 2 + 20, this.o.height - 7);
+                    c.fillText("+", this.o.width / 2 - 34, this.o.height - 7);
                 }
             }
 
